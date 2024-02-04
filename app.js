@@ -4,19 +4,29 @@ const fs = require("fs/promises");
 const path = require("path");
 const program = new Command();
 
-program.command('add')
-  .description('Adds expense')
-  .argument('<expenses>', 'Expense to add in DB')
-  .action(async (expense ) => {
+program
+  .command('add')
+  .description('Adds an expense')
+  .option('  <total>', ' amount  the expense')
+  .option('  <category>', 'Category  expense')
+  .option('  <date>', 'Date ')
+  .action(async ({ total, category, date }) => {
     try {
-      const filePath = path.join(__dirname, "packet.json");
-      const data = await fs.readFile(filePath, "utf-8");
+      const filePath = path.join(__dirname, 'db.json');
+      const data = await fs.readFile(filePath, 'utf-8');
       const expenses = data ? JSON.parse(data) : [];
-      expenses.push({ expense });
-      await fs.writeFile(filePath, JSON.stringify(expenses, null, 2));
-      console.log("Expense added successfully!");
-    } catch (e) {
-      console.error(e);
+
+      const newExpense = {
+        id: expenses.length + 1,
+        total: parseFloat(total),
+        category,
+        date,
+      };
+
+      expenses.push(newExpense);
+ await fs.writeFile(filePath, JSON.stringify(expenses, null, 2));
+    } catch (error) {
+      console.error('Error :', error.message);
     }
   });
 
@@ -30,7 +40,7 @@ program
   .option('-c, --category <category>', 'Category of the expense')
   .action(async ({ date, category }) => {
     try {
-      const filePath = path.join(__dirname, 'packet.json');
+      const filePath = path.join(__dirname, 'db.json');
       const data = await fs.readFile(filePath, 'utf-8');
       const expenses = data ? JSON.parse(data) : [];
 
@@ -57,7 +67,7 @@ program
   .option('-i, --id <id>', 'ID of the expense to delete')
   .action(async ({ id }) => {
     try {
-      const filePath = path.join(__dirname, 'packet.json');
+      const filePath = path.join(__dirname, 'db.json');
       const data = await fs.readFile(filePath, 'utf-8');
       const expenses = data ? JSON.parse(data) : [];
 
