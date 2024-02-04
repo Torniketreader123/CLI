@@ -7,9 +7,9 @@ const program = new Command();
 program
   .command('add')
   .description('Adds an expense')
-  .option('  <total>', ' amount  the expense')
-  .option('  <category>', 'Category  expense')
-  .option('  <date>', 'Date ')
+  .option('-t, --total <total>', 'Total  expense')
+  .option('-c, --category <category>', 'Category ')
+  .option('-d, --date <date>', 'Date ')
   .action(async ({ total, category, date }) => {
     try {
       const filePath = path.join(__dirname, 'db.json');
@@ -24,9 +24,11 @@ program
       };
 
       expenses.push(newExpense);
- await fs.writeFile(filePath, JSON.stringify(expenses, null, 2));
+
+      await fs.writeFile(filePath, JSON.stringify(expenses, null, 2));
+      console.log('Expense added successfully:', newExpense);
     } catch (error) {
-      console.error('Error :', error.message);
+      console.error('Error adding expense:', error.message);
     }
   });
 
