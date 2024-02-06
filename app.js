@@ -32,7 +32,31 @@ program
     }
   });
 
-program.parse();
+
+program
+.command('delete')
+.description('Deletes an expense by ID')
+.option('-i, --id <id>', 'ID of the expense to delete')
+.action(async ({ id }) => {
+  try {
+    const filePath = path.join(__dirname, 'db.json');
+    const data = await fs.readFile(filePath, 'utf-8');
+    const expenses = data ? JSON.parse(data) : [];
+
+    const indexToDelete = expenses.findIndex((expense) => expense.id === parseInt(id));
+
+    if (indexToDelete !== -1) {
+      expenses.splice(indexToDelete, 1);
+      await fs.writeFile(filePath, JSON.stringify(expenses, null, 2));
+      console.log(`Expense with ID ${id} deleted successfully!`);
+    } else {
+      console.log(`Expense with ID ${id} not found.`);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+});
+
 
 
 program
@@ -62,28 +86,5 @@ program
     }
   });
 
+
 program.parse();
-program
-  .command('delete')
-  .description('Deletes an expense by ID')
-  .option('-i, --id <id>', 'ID of the expense to delete')
-  .action(async ({ id }) => {
-    try {
-      const filePath = path.join(__dirname, 'db.json');
-      const data = await fs.readFile(filePath, 'utf-8');
-      const expenses = data ? JSON.parse(data) : [];
-
-      const indexToDelete = expenses.findIndex((expense) => expense.id === parseInt(id));
-
-      if (indexToDelete !== -1) {
-        expenses.splice(indexToDelete, 1);
-        await fs.writeFile(filePath, JSON.stringify(expenses, null, 2));
-        console.log(`Expense with ID ${id} deleted successfully!`);
-      } else {
-        console.log(`Expense with ID ${id} not found.`);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  });
-
